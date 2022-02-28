@@ -1,24 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from 'react';
 
 function App() {
+  const [loading, setLoading] = useState(true);
+  const [befolkningstal, setBefolkningstal] = useState({});
+
+  const fetchData = async () => {
+    setLoading(true);
+
+    const body = { table: 'BEF5', format: 'JSONSTAT' };
+
+    try {
+      const response = await fetch('https://api.statbank.dk/v1/data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+      const data = await response.json();
+
+      const befolktningstalData = (await data.dataset.value[0]) / 1000000;
+
+      setBefolkningstal(befolktningstalData);
+
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <h1>loading...</h1>;
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <h1>Danmarks befolkningstal: {befolkningstal.toFixed(3)} mio.</h1>
+    </>
   );
 }
 
