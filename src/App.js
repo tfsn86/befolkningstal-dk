@@ -2,12 +2,21 @@ import { useEffect, useState } from 'react';
 
 function App() {
   const [loading, setLoading] = useState(true);
-  const [befolkningstal, setBefolkningstal] = useState({});
+  const [befolkningstal, setBefolkningstal] = useState([]);
 
   const fetchData = async () => {
     setLoading(true);
 
-    const body = { table: 'BEF5', format: 'JSONSTAT' };
+    const body = {
+      table: 'BEF5',
+      format: 'JSONSTAT',
+      variables: [
+        {
+          code: 'Tid',
+          values: ['2017', '2018', '2019', '2020', '2021', '2022'],
+        },
+      ],
+    };
 
     try {
       const response = await fetch('https://api.statbank.dk/v1/data', {
@@ -19,9 +28,17 @@ function App() {
       });
       const data = await response.json();
 
-      const befolktningstalData = (await data.dataset.value[0]) / 1000000;
+      const timeArray = Object.keys(data.dataset.dimension.Tid.category.label);
+      const valueArray = Object.values(data.dataset.value);
 
-      setBefolkningstal(befolktningstalData);
+      let newArray = timeArray.map((year, i) => ({
+        year,
+        value: valueArray[i],
+      }));
+
+      setBefolkningstal(newArray);
+
+      // const befolkningstalData = (await data.dataset.value[5]) / 1000000;
 
       setLoading(false);
     } catch (error) {
@@ -34,12 +51,26 @@ function App() {
   }, []);
 
   if (loading) {
-    return <h1>loading...</h1>;
+    return (
+      <div className='container'>
+        <h1>Loading...</h1>;
+      </div>
+    );
   }
 
   return (
     <>
-      <h1>Danmarks befolkningstal: {befolkningstal.toFixed(3)} mio.</h1>
+      <div className='container'>
+        <h1>Udvikling i Danmarks befolkningstal</h1>
+        <br />
+        {befolkningstal.map((tal, i) => {
+          return (
+            <div className='data' key={i}>
+              {tal.year}: {(tal.value / 1000000).toFixed(3)} mio.
+            </div>
+          );
+        })}
+      </div>
     </>
   );
 }
