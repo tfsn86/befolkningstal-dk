@@ -1,4 +1,13 @@
 import { useEffect, useState } from 'react';
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Label,
+} from 'recharts';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -13,7 +22,40 @@ function App() {
       variables: [
         {
           code: 'Tid',
-          values: ['2017', '2018', '2019', '2020', '2021', '2022'],
+          values: [
+            '1990',
+            '1991',
+            '1992',
+            '1993',
+            '1994',
+            '1995',
+            '1996',
+            '1997',
+            '1998',
+            '1999',
+            '2001',
+            '2002',
+            '2003',
+            '2004',
+            '2005',
+            '2006',
+            '2007',
+            '2008',
+            '2009',
+            '2010',
+            '2011',
+            '2012',
+            '2013',
+            '2014',
+            '2015',
+            '2016',
+            '2017',
+            '2018',
+            '2019',
+            '2020',
+            '2021',
+            '2022',
+          ],
         },
       ],
     };
@@ -30,15 +72,16 @@ function App() {
 
       const timeArray = Object.keys(data.dataset.dimension.Tid.category.label);
       const valueArray = Object.values(data.dataset.value);
+      const valueArrayToFixed = valueArray.map((item) => {
+        return (item / 1000000).toFixed(3);
+      });
 
       let newArray = timeArray.map((year, i) => ({
-        year,
-        value: valueArray[i],
+        År: year,
+        Antal: valueArrayToFixed[i],
       }));
 
       setBefolkningstal(newArray);
-
-      // const befolkningstalData = (await data.dataset.value[5]) / 1000000;
 
       setLoading(false);
     } catch (error) {
@@ -61,15 +104,32 @@ function App() {
   return (
     <>
       <div className='container'>
-        <h1>Udvikling i Danmarks befolkningstal</h1>
+        <h1>Udvikling i Danmarks befolkningstal pr. 1. januar 1990-2022</h1>
         <br />
-        {befolkningstal.map((tal, i) => {
-          return (
-            <div className='data' key={i}>
-              {tal.year}: {(tal.value / 1000000).toFixed(3)} mio.
-            </div>
-          );
-        })}
+        <br />
+        <br />
+
+        <LineChart
+          width={840}
+          height={400}
+          data={befolkningstal}
+          margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+        >
+          <Line type='monotone' dataKey='Antal' stroke='#211773' />
+          <CartesianGrid stroke='#ccc' strokeDasharray='5 5' />
+          <XAxis dataKey='År' />
+          <YAxis type='number' domain={[5, 6]}>
+            <Label
+              angle={-90}
+              value='Antal'
+              position='insideLeft'
+              style={{ textAnchor: 'middle' }}
+            />
+          </YAxis>
+          <Tooltip />
+        </LineChart>
+        <br />
+        <p>Kilde: Danmarks Statistik (tabel: BEF5)</p>
       </div>
     </>
   );
