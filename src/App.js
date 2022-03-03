@@ -7,6 +7,7 @@ import {
   YAxis,
   Tooltip,
   Label,
+  ResponsiveContainer,
 } from 'recharts';
 
 function App() {
@@ -108,31 +109,60 @@ function App() {
         <br />
         <br />
         <br />
-
-        <LineChart
-          width={840}
-          height={400}
-          data={befolkningstal}
-          margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-        >
-          <Line type='monotone' dataKey='Antal' stroke='#211773' />
-          <CartesianGrid stroke='#ccc' strokeDasharray='5 5' />
-          <XAxis dataKey='År' />
-          <YAxis type='number' domain={[5, 6]}>
-            <Label
-              angle={-90}
-              value='Antal'
-              position='insideLeft'
-              style={{ textAnchor: 'middle' }}
-            />
-          </YAxis>
-          <Tooltip />
-        </LineChart>
+        <ResponsiveContainer width='100%' height={400}>
+          <LineChart
+            width={840}
+            height={400}
+            data={befolkningstal}
+            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+          >
+            <Line type='monotone' dataKey='Antal' stroke='#211773' />
+            <CartesianGrid stroke='#ccc' vertical={false} opacity={0.8} />
+            <XAxis dataKey='År' />
+            <YAxis
+              type='number'
+              domain={[5, 6]}
+              axisLine={false}
+              tickLine={false}
+              tickCount={6}
+              tickFormatter={(number) => `${number.toFixed(1)}`}
+            >
+              <Label
+                angle={-90}
+                value='Antal (mio.)'
+                position='insideLeft'
+                style={{ textAnchor: 'middle' }}
+              />
+            </YAxis>
+            <Tooltip content={<CustomToolTip />} />
+          </LineChart>
+        </ResponsiveContainer>
         <br />
-        <p>Kilde: Danmarks Statistik (tabel: BEF5)</p>
+        <p>
+          Kilde: Danmarks Statistik -{' '}
+          <a
+            href='https://statistikbanken.dk/bef5'
+            target='_blank'
+            rel='noreferrer'
+          >
+            https://statistikbanken.dk/bef5
+          </a>
+        </p>
       </div>
     </>
   );
+}
+
+function CustomToolTip({ active, payload, label }) {
+  if (active) {
+    return (
+      <div className='tooltip'>
+        <h4>{label}</h4>
+        <p>{payload[0].value} mio.</p>
+      </div>
+    );
+  }
+  return null;
 }
 
 export default App;
