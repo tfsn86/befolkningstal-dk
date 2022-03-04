@@ -97,7 +97,7 @@ function App() {
   if (loading) {
     return (
       <div className='container'>
-        <h1>Loading...</h1>;
+        <h1>Loading...</h1>
       </div>
     );
   }
