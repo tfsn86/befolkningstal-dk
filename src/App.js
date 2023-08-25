@@ -106,7 +106,7 @@ function App() {
   return (
     <>
       <div className='container'>
-        <h1>Udvikling i Danmarks befolkningstal pr. 1. januar 1990-2022</h1>
+        <h1>Udvikling i Danmarks befolkningstal pr. 1. januar 1990-2023</h1>
         <br />
         <br />
         <br />
